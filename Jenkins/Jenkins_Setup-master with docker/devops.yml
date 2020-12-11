@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+    jenkins-dodcker:
+        image: docker:18.09-dind
+        restart: always
+        privileged: true
+        user: root
+        ports:
+             - 2375:2375
+        container_name: jenkins-docker
+        volumes:
+            - /opt/jenkins/jenkins-data:/var/jenkins_home
+        networks: 
+            devops:
+                aliases:
+                    - docker
+    jenkins:
+        image: jenkinsci/blueocean
+        restart: always
+        environment:
+            - DOCKER_HOST=tcp://docker:2375
+        privileged: true
+        user: root
+        ports:
+            - 8280:8080
+            - 50000:50000
+        container_name: jenkins
+        volumes:
+            - /opt/jenkins/jenkins-data:/var/jenkins_home
+        networks: 
+            - devops
+    gitlab:
+        image: gitlab/gitlab-ce:latest
+        restart: always
+        hostname: '$G_HOSTNAME'
+        user: root
+        ports:
+            - 8080:80
+            - 443:443
+            - 44:22
+        container_name: gitlab
+        volumes:
+            - /opt/gitlab/config:/etc/gitlab
+            - /opt/gitlab/logs:/var/log/gitlab
+            - /opt/gitlab/data:/var/opt/gitlab
+        networks:
+            devops:
+                aliases:
+                    - gitlab
+
+networks:
+    devops:

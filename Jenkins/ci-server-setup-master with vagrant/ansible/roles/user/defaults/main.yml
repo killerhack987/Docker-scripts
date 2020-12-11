@@ -1,0 +1,4 @@
+ci_user: ci
+ci_group: ci
+ci_home: /var/ci
+ci_docker_network: ci_network

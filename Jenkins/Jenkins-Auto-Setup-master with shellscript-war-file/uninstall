@@ -1,0 +1,13 @@
+#!/bin/bash
+
+sudo service jenkins stop
+
+echo *service stopped*
+
+sudo rm /etc/systemd/system/jenkins.service
+
+echo *service removed*
+
+sudo userdel -r jenkins
+
+echo *user profiles deleted*

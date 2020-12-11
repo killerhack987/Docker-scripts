@@ -1,0 +1,24 @@
+# Build custom jenkins image
+- include: build-image.yml
+  when: jenkins_image_build
+
+- name: "Start jenkins container"
+  docker_container:
+    name: jenkins
+    image: "{{ jenkins_image }}:{{ jenkins_version }}"
+    volumes:
+      - "jenkins_home:/var/jenkins_home"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "{{ jenkins_port }}:8080"
+    networks:
+      - name: "{{ ci_docker_network }}"
+- name: "Create jenkins service descriptor"
+  template:
+    src: jenkins-ci.service.j2
+    dest: /etc/systemd/system/jenkins-ci.service
+- name: "Enable jenkins service"
+  service:
+    name: jenkins-ci
+    enabled: yes
+    state: started
